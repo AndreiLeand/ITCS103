@@ -29,7 +29,7 @@ profile_motto.pack(pady=10,padx=0,anchor="w")
 profile_motto1 = tkin.Label(window,text="“No matter how high you rise or how much knowledge you gain, always remain humble, because whatever God has given you, He can also take away if He needs to humble you.”",font=("Arial",15),bg="#6dd5ed",fg="#0b3c5d",wraplength=500,justify="center")
 profile_motto1.pack(pady=10,fill="x")
 
-def rainbow(label):
+def sarisari(label):
     colors = ["#FF0000","#262727","#0000FF","#031f25","#800080","#01181D"]
     i = 0
 
@@ -41,7 +41,7 @@ def rainbow(label):
 
     change_color()
 
-rainbow(profile_motto1)
+sarisari(profile_motto1)
 
 
 
