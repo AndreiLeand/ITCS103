@@ -1,5 +1,5 @@
 import tkinter as tkin
-from kulayin import *
+
 
 window = tkin.Tk()
 window.title("Profile Page")
@@ -8,7 +8,7 @@ window.resizable(False,True)
 window.configure(bg = "#6dd5ed")
 
 
-profile_page = tkin.Label(window, text="Profile Page", font=("Arial",40,"bold"), bg="#6dd5ed",fg="#0b3c5d")
+profile_page = tkin.Label(window, text="Profile Page", font=("Matrix",40,"bold"), bg="#6dd5ed",fg="#0b3c5d")
 profile_page.pack(pady=20)
 
 profile_name = tkin.Label(window,text="Name: Andrei Leand A. Menemedez",font=("Arial",15),bg="#6dd5ed",fg="#0b3c5d")
@@ -28,11 +28,20 @@ profile_motto.pack(pady=10,padx=0,anchor="w")
 
 profile_motto1 = tkin.Label(window,text="“No matter how high you rise or how much knowledge you gain, always remain humble, because whatever God has given you, He can also take away if He needs to humble you.”",font=("Arial",15),bg="#6dd5ed",fg="#0b3c5d",wraplength=500,justify="center")
 profile_motto1.pack(pady=10,fill="x")
+
+def rainbow(label):
+    colors = ["#FF0000","#262727","#0000FF","#031f25","#800080","#01181D"]
+    i = 0
+
+    def change_color():
+        nonlocal i
+        label.config(fg=colors[i])
+        i = (i + 1) % len(colors)
+        label.after(500, change_color)
+
+    change_color()
+
 rainbow(profile_motto1)
-
-
-
-
 
 
 
