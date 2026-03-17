@@ -11,17 +11,8 @@ window.configure(bg="skyblue")
 """FUNCTION"""
 
 
-def compute_age(year):    
-    return 2006 - int(year)
 
 
-def get_gender():
-    if gender.get() == 1:
-        return "Male"
-    elif gender.get() == 2:
-        return "Female"
-    else:
-        return "Not Set"
 
 def get_color():
     if gender.get() == 1:
@@ -49,8 +40,8 @@ def submit():
     if not b.isdigit():
         return
 
-    age = 2026 - int(b)
-    g_text = get_gender()
+    
+   
 
     if gender.get() == 1:
         top_color = "blue"
@@ -70,10 +61,10 @@ def submit():
     name_l = tk.Label(top, text=f"Name: {name}", bg=top_color)
     name_l.pack()
 
-    age_l = tk.Label(top, text=f"Age: {age}", bg=top_color)
+    age_l = tk.Label(top, text=f"Age:21 hahah", bg=top_color)
     age_l.pack()
 
-    gender_l = tk.Label(top, text=f"Gender: {g_text}", bg=top_color)
+    gender_l = tk.Label(top, text=f"Gender:", bg=top_color)
     gender_l.pack()
 
 """LABEL"""
