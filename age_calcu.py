@@ -17,6 +17,75 @@ def display_excel():
     for row in sheet.iter_rows(min_row=2,values_only=True):
         table.insert("",tk.END,values=row)
 
+def select_record():
+    selected = table.focus()
+    values = table.item(selected, "values")
+    
+    if not values:
+        return
+    
+    # Clear current entries
+    fname_entry.delete(0, tk.END)
+    mname_entry.delete(0, tk.END)
+    lname_entry.delete(0, tk.END)
+    birth_entry.delete(0, tk.END)
+    
+    # Insert selected values into entries
+    # Note: Order in Excel is [ID, Last, First, Middle, BirthYear, Age]
+    # So we skip ID and Age for input fields
+    lname_entry.insert(0, values[1])      # Last Name
+    fname_entry.insert(0, values[2])      # First Name
+    mname_entry.insert(0, values[3])      # Middle Name
+    birth_entry.insert(0, str(values[4])) # Birth Year
+    
+    table.bind("<<TreeviewSelect>>",select_record)
+
+def update_data():
+    selected = table.focus()
+    if not selected:
+        messagebox.showerror("Error", "Please select a record to update.")
+        return
+    
+    values = table.item(selected, "values")
+    record_id = int(values[0])  # ID is first column
+    
+    if not validation():
+        return
+    
+    first = fname_entry.get().strip()
+    middle = mname_entry.get().strip()
+    last = lname_entry.get().strip()
+    try:
+        birthyear = int(birth_entry.get())
+    except ValueError:
+        messagebox.showerror("Error", "Birth year must be a number.")
+        return
+    
+    age = 2026 - birthyear
+    
+    workbook = op.load_workbook("excelDB.xlsx")
+    sheet = workbook.active
+    
+    found = False
+    for row in sheet.iter_rows(min_row=2):
+        if row[0].value == record_id:
+            row[1].value = last
+            row[2].value = first
+            row[3].value = middle
+            row[4].value = birthyear
+            row[5].value = age
+            found = True
+            break
+    
+    if found:
+        workbook.save("excelDB.xlsx")
+        messagebox.showinfo("Success", "Record updated successfully!")
+        display_excel()
+    else:
+        messagebox.showerror("Error", "Record not found.")
+
+
+
 def validation():
     first = fname_entry.get()
     middle = mname_entry.get()
@@ -51,6 +120,36 @@ def append_excel():
 
     messagebox.showinfo("Success","Record added successfully!")
     display_excel()
+
+def delete_data():
+    selected = table.focus()
+    if not selected:
+        messagebox.showerror("Error", "Please select a record to delete.")
+        return
+    
+    values = table.item(selected, "values")
+    record_id = int(values[0])
+    
+    confirm = messagebox.askyesno("Confirm", f"Are you sure you want to delete record ID {record_id}?")
+    if not confirm:
+        return
+    
+    workbook = op.load_workbook("excelDB.xlsx")
+    sheet = workbook.active
+    
+    deleted = False
+    for i, row in enumerate(sheet.iter_rows(min_row=2), start=2):
+        if row[0].value == record_id:
+            sheet.delete_rows(i, 1)
+            deleted = True
+            break
+    
+    if deleted:
+        workbook.save("excelDB.xlsx")
+        messagebox.showinfo("Success", "Record deleted successfully!")
+        display_excel()
+    else:
+        messagebox.showerror("Error", "Record not found.")
 
 
 
@@ -95,18 +194,23 @@ birth_entry.grid(row=4, column=1,columnspan=2,padx=(10,0))
 birthyear_label = tk.Label(genframe, text="Birth Year", font=("Poppins",10,"italic"),bg="lightgreen")
 birthyear_label.grid(row=5, column=2,columnspan=2)
 
-update_btn = tk.Button(window, text="Update")
+update_btn = tk.Button(window, text="Update",command=update_data)
 update_btn.grid(row=6, column=2)
 
-button= tk.Button(window,text="Submit",font=("Poppins",12,"bold"),bg="lightpink",command=validation)
-button.grid(row=6, column=0, columnspan=6,pady=(10,20))
+submit_button= tk.Button(window,text="Submit",font=("Poppins",12,"bold"),bg="lightpink",command=append_excel)
+submit_button.grid(row=6, column=0, columnspan=6,pady=(10,20))
 
-delete_btn = tk.Button(window, text="Delete",  bg="red", fg="white")
+delete_btn = tk.Button(window, text="Delete",  bg="red", fg="white",command=delete_data)
 delete_btn.grid(row=6, column=3)
 
-table = ttk.Treeview(window, columns=("ID","Last","First","Middle","BirthYear","Age"), show="headings")
-for col in ("ID","Last","First","Middle","BirthYear","Age"):
+columns = ("ID", "Last", "First", "Middle", "BirthYear", "Age")
+table = ttk.Treeview(window, columns=columns, show="headings")
+for col in columns:
     table.heading(col, text=col)
 table.grid(row=7, column=0, columnspan=4)
+
+
 display_excel()
+
+
 window.mainloop()
