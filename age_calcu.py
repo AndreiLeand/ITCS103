@@ -38,7 +38,7 @@ def select_record():
     mname_entry.insert(0, values[3])      # Middle Name
     birth_entry.insert(0, str(values[4])) # Birth Year
     
-    table.bind("<<TreeviewSelect>>",select_record)
+    
 
 def update_data():
     selected = table.focus()
@@ -208,9 +208,9 @@ table = ttk.Treeview(window, columns=columns, show="headings")
 for col in columns:
     table.heading(col, text=col)
 table.grid(row=7, column=0, columnspan=4)
+table.bind("<<TreeviewSelect>>",select_record)
 
-
-display_excel()
+display_excel() 
 
 
 window.mainloop()
