@@ -6,13 +6,12 @@ sheet = workbook.active
 sheet ['A1'] = "ID"
 sheet ['B1'] = "Last Name"
 sheet['C1'] = "First Name"
-sheet['D1'] = "Middle Name"
-sheet['E1'] = "Course"
-sheet['F1'] = "Year"
-sheet['G1'] = "Section"
-sheet['H1'] = "Lab"
-sheet['I1'] = "Day"
-sheet['J1'] = "Time"
+sheet['D1'] = "Course"
+sheet['E1'] = "Year"
+sheet['F1'] = "Section"
+sheet['G1'] = "Lab"
+sheet['H1'] = "Day"
+sheet['I1'] = "Time"
 
 
 

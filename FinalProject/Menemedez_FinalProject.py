@@ -132,24 +132,21 @@ def display_excel():
     workbook = op.load_workbook("Menemedez_Database.xlsx")
     sheet = workbook.active
 
-    #Clear Treeview
     for content in tree.get_children():
         tree.delete(content)
 
-    #Insert Excel Data
     for row in sheet.iter_rows(min_row=2,values_only=True):
         tree.insert("",tk.END,values=row)
 
 def validation():
     firstname = fname_entry.get()
-    middlename = mname_entry.get()
     lastname = lname_entry.get()
     course = course_entry.get()
     year = year_entry.get()
     section = section_entry.get()
 
 
-    if not firstname or not middlename or not lastname or not course or not year or not section:
+    if not firstname or not lastname or not course or not year or not section:
         messagebox.showerror("Error","All fields is required")
         return False
     if not year.isdigit():
@@ -160,12 +157,10 @@ def validation():
 
 
 def reserve():
-    # 1. Validate Inputs
     if not validation():
         return
 
     firstname = fname_entry.get().strip()
-    middlename = mname_entry.get().strip()
     lastname = lname_entry.get().strip()
     course = course_entry.get().strip()
     year = year_entry.get().strip()
@@ -178,7 +173,6 @@ def reserve():
     # Check if the list of occupiers for this specific slot is NOT empty
     try:
         if Lab_schedule[day][lab][time]:
-            # If list is not empty, it means someone is already there
             occupants = ", ".join(Lab_schedule[day][lab][time])
             messagebox.showerror("Reservation Failed", 
                                  f"Cannot Reserve!\n\n{lab} on {day} at {time} is already occupied by:\n{occupants}")
@@ -187,15 +181,12 @@ def reserve():
         messagebox.showerror("Error", "Invalid Schedule Selection.")
         return
 
-    # 3. SAVE TO EXCEL IF FREE
     workbook = op.load_workbook("Menemedez_Database.xlsx")
     sheet = workbook.active
 
     new_id = sheet.max_row
     
-    # Note: Ensure column order matches your Treeview/Excel headers
-    # ID, Last, First, Middle, Course, Year, Section, Lab, Day, Time
-    sheet.append([new_id, lastname, firstname, middlename, course, year, section, lab, day, time])
+    sheet.append([new_id, lastname, firstname, course, year, section, lab, day, time])
     
     workbook.save("Menemedez_Database.xlsx")
 
@@ -214,7 +205,6 @@ def reserve():
 def clear_form():
     # Clear Text Entries
     fname_entry.delete(0, tk.END)
-    mname_entry.delete(0, tk.END)
     lname_entry.delete(0, tk.END)
     course_entry.delete(0, tk.END)
     year_entry.delete(0, tk.END)
@@ -235,19 +225,14 @@ def select_for_update(event):
     # Get values from the row
     values = tree.item(selected_item)['values']
     
-    # Values order: ID, Last, First, Middle, Course, Year, Section, Lab, Day, Time
-    # Index:      0,   1,    2,     3,      4,     5,    6,      7,   8,   9
-
-    # Clear form first
     clear_form()
 
     # Fill entries
     fname_entry.insert(0, values[2])  # First Name
-    mname_entry.insert(0, values[3])  # Middle Name
     lname_entry.insert(0, values[1])  # Last Name
-    course_entry.insert(0, values[4]) # Course
-    year_entry.insert(0, str(values[5])) # Year
-    section_entry.insert(0, values[6])# Section
+    course_entry.insert(0, values[3]) # Course
+    year_entry.insert(0, str(values[4])) # Year
+    section_entry.insert(0, values[5])# Section
     
     # Set Comboboxes
     # We need to find the index of the value in the combobox list to set it correctly
@@ -260,8 +245,6 @@ def select_for_update(event):
     if values[9] in time_list['values']:
         time_list.set(values[9])
 
-    # Store the ID of the item being edited in a global variable or attach it to the button
-    # For simplicity, we can store it in a hidden label or just use tree.focus() later in update
     global editing_item_id
     editing_item_id = selected_item    
 
@@ -275,7 +258,6 @@ def update_record():
 
     # Get new values from inputs
     firstname = fname_entry.get().strip()
-    middlename = mname_entry.get().strip()
     lastname = lname_entry.get().strip()
     course = course_entry.get().strip()
     year = year_entry.get().strip()
@@ -300,16 +282,14 @@ def update_record():
         found = False
         for row in sheet.iter_rows(min_row=2):
             if row[0].value == target_id: # Column A is ID
-                # Update the cells: Last, First, Middle, Course, Year, Section, Lab, Day, Time
                 row[1].value = lastname
                 row[2].value = firstname
-                row[3].value = middlename
-                row[4].value = course
-                row[5].value = int(year)
-                row[6].value = section
-                row[7].value = lab
-                row[8].value = day
-                row[9].value = time
+                row[3].value = course
+                row[4].value = int(year)
+                row[5].value = section
+                row[6].value = lab
+                row[7].value = day
+                row[8].value = time
                 found = True
                 break
         
@@ -319,12 +299,8 @@ def update_record():
 
         workbook.save("Menemedez_Database.xlsx")
 
-        # 2. Update Global Memory (Lab_schedule)
-        # This is tricky because we need to remove the old slot and add to the new slot
-        # For simplicity in this CRUD, we will just reload the whole schedule from Excel
         checking_schedule() 
 
-        # 3. Refresh UI
         display_excel()
         clear_form()
         messagebox.showinfo("Success", "Record Updated Successfully!")
@@ -345,14 +321,11 @@ def delete_record():
         return
 
     try:
-        # 1. Get ID of selected item
         target_id = tree.item(selected_item)['values'][0]
 
-        # 2. Remove from Excel
         workbook = op.load_workbook("Menemedez_Database.xlsx")
         sheet = workbook.active
         
-        # Iterate backwards to safely delete rows
         for row in reversed(list(sheet.iter_rows(min_row=2))):
             if row[0].value == target_id:
                 sheet.delete_rows(row[0].row)
@@ -360,10 +333,9 @@ def delete_record():
                 
         workbook.save("Menemedez_Database.xlsx")
 
-        # 3. Update Memory and UI
-        checking_schedule() # Reload memory to reflect deletion
-        display_excel()     # Refresh Treeview
-        clear_form()        # Clear inputs
+        checking_schedule() 
+        display_excel()     
+        clear_form()        
         
         messagebox.showinfo("Success", "Record Deleted Successfully!")
 
@@ -372,11 +344,12 @@ def delete_record():
 
 window = tk.Tk()
 window.title("COMPUTER LABORATORY RESERVATION SYSTEM")
+window.state('zoomed')
 window.geometry("900x600")
 window.configure(bg="lightblue")
 
 # Configure the main window grid to allow expansion
-window.grid_rowconfigure(3, weight=1) # Allows the treeview to expand vertically
+window.grid_rowconfigure(4, weight=1) # Allows the treeview to expand vertically
 window.grid_columnconfigure(0, weight=1)
 
 # --- TITLE ---
@@ -392,10 +365,6 @@ tk.Label(frame, text="First Name", font=("Poppins", 10, "italic"), bg="lightblue
 fname_entry = tk.Entry(frame, font=("Poppins", 12))
 fname_entry.grid(row=0, column=1, padx=5, pady=5)
 
-# MIDDLENAME
-tk.Label(frame, text="Middle Name", font=("Poppins", 10, "italic"), bg="lightblue").grid(row=0, column=2, padx=5, pady=5, sticky="e")
-mname_entry = tk.Entry(frame, font=("Poppins", 12))
-mname_entry.grid(row=0, column=3, padx=5, pady=5)
 
 # LASTNAME
 tk.Label(frame, text="Last Name", font=("Poppins", 10, "italic"), bg="lightblue").grid(row=0, column=4, padx=5, pady=5, sticky="e")
@@ -488,7 +457,7 @@ tree = ttk.Treeview(window, columns=columns,show="headings")
 for col in columns:
     tree.heading(col,text=col)
 tree.grid(row=7,column=0,columnspan=4)
-tree.bind("<Double-1>",select_for_update)
+tree.bind("<<TreeviewSelect>>",select_for_update)
 
 
 checking_schedule()
