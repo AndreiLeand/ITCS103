@@ -15,20 +15,19 @@ def show_welcome_window():
     
     # Create welcome window
     welcome_win = tk.Toplevel(window)
+    welcome_win.state('zoomed')
     welcome_win.title("Welcome")
-    welcome_win.geometry("600x400")
+    welcome_win.geometry("800x500")
     welcome_win.configure(bg="#2c3e50")
-    welcome_win.resizable(False, False)
+    welcome_win.resizable(True, True)
     
-    # Center the window
     welcome_win.update_idletasks()
-    width = 600
-    height = 400
+    width = 1300
+    height = 800
     x = (welcome_win.winfo_screenwidth() // 2) - (width // 2)
     y = (welcome_win.winfo_screenheight() // 2) - (height // 2)
     welcome_win.geometry(f'{width}x{height}+{x}+{y}')
     
-    # Title
     title_label = tk.Label(welcome_win, 
                           text="COMPUTER LABORATORY\nRESERVATION SYSTEM", 
                           font=("Times New Roman", 24, "bold"), 
@@ -36,33 +35,34 @@ def show_welcome_window():
                           bg="#2c3e50")
     title_label.pack(pady=30)
     
-    # Description
     desc_text = """
-    Welcome to the DLL Computer Laboratory Reservation System!
+    WELCOME IN MY FINAL PROJECT: COMPUTER LABORATORY RESERVATION SYSTEM!
     
-    This system allows authorized student representatives to:
+    THIS SYSTEM ALLOWS AUTHORIZED STUDENT REPRESENTATIVES TO:
     
-    • Reserve computer laboratories (CL1-CL5)
-    • View existing schedules
-    • Update and delete reservations
+    • RESERVE COMPUTER LABORATORIES(CL1-CL5)
+    • UPDATE AND DELETE RESERVATIONS
     
-    Please ensure you are an authorized representative
-    before making a reservation.
+    PLEASE ENSURE YOU ARE AN AUTHORIZED REPRESENTATIVE BEFORE MAKING RESERVATION
+    
+
+    DISCLAIMER!!!!: THIS SYSTEM IS FOR FINAL PROJECT NOT A SYSTEM THAT CAN USE IN REAL WORLD BECAUSE ITS NOT FULLY PERFECT AND FULLY FUNCTIONING
+
     """
     
     desc_label = tk.Label(welcome_win, 
                          text=desc_text, 
-                         font=("Arial", 11), 
+                         font=("Arial", 15), 
                          fg="#ecf0f1", 
-                         bg="#2c3e50",
+                         bg="#2c3e50",  
                          justify="center")
     desc_label.pack(pady=10)
     
     # Continue Button
     def proceed_to_main():
-        welcome_win.destroy()  # Close welcome window
-        window.deiconify()     # Show main window
-        window.state('zoomed') # Make main window fullscreen
+        welcome_win.destroy()
+        window.deiconify()     
+         
     
     btn_continue = tk.Button(welcome_win, 
                             text="PROCEED TO SYSTEM", 
@@ -72,6 +72,7 @@ def show_welcome_window():
                             width=20, 
                             command=proceed_to_main)
     btn_continue.pack(pady=20)
+
 
 
 def checking_schedule():
@@ -406,7 +407,8 @@ def delete_record():
 
 window = tk.Tk()
 window.title("COMPUTER LABORATORY RESERVATION SYSTEM")
-window.geometry("900x600")
+window.geometry("1000x600")
+window.resizable(False,False)
 window.configure(bg="lightblue")
 
 # Configure the main window grid to allow expansion
